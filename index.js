@@ -1,4 +1,13 @@
 var canvas, ctx, age, curViz;
+var maxAge = {
+    seconds: 60*60*24*365.25*80,
+    minutes: 60*24*365.25*80,
+    hours: 24*365.25*80,
+    days: 365.25*80,
+    weeks: 365.25*80/7,
+    months: 365.25*80/30.41,
+    years: 80
+};
 
 // draw remaining years as a grid of circles, 13 wide
 function drawWeeks() {
@@ -7,11 +16,11 @@ function drawWeeks() {
     var radius = 3;
     var spacing = 2*radius + 4;
     // resize canvas
-    canvas.height = Math.ceil((5218 - age.weeks)/cols)*spacing - (spacing - 2*radius);
+    canvas.height = Math.ceil((maxAge.weeks - age.weeks)/cols)*spacing - (spacing - 2*radius);
     canvas.width = cols*spacing - (spacing - 2*radius);
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
     // draw past weeks from bottom up
-    for (var i = 0; i < 5217 - age.weeks; i++) {
+    for (var i = 0; i < Math.floor(maxAge.weeks - age.weeks); i++) {
         var x = canvas.width - (i % cols)*spacing;
         var y = canvas.height - Math.floor(i/cols)*spacing;
         ctx.beginPath();
@@ -21,9 +30,9 @@ function drawWeeks() {
     }
     // draw current week
     ctx.beginPath();
-    x = canvas.width - ((5217 - age.weeks) % cols)*spacing;
-    y = canvas.height - Math.floor((5217 - age.weeks)/cols)*spacing;
-    var frac = ((24*365.25*100 - age.hours) % (24*7)) / (24*7);
+    x = canvas.width - (Math.floor(maxAge.weeks - age.weeks) % cols)*spacing;
+    y = canvas.height - Math.floor((maxAge.weeks - age.weeks)/cols)*spacing;
+    var frac = ((maxAge.hours - age.hours) % (24*7)) / (24*7);
     ctx.arc(x - radius, y - radius, radius, -Math.PI/2, -Math.PI/2 + 2*Math.PI*frac, false);
     ctx.lineTo(x - radius, y - radius);
     ctx.closePath();
@@ -37,20 +46,20 @@ function drawYears() {
     var size = 10;
     var spacing = 20;
     // resize canvas
-    canvas.height = Math.ceil(100/cols)*spacing - (spacing - size);
+    canvas.height = Math.ceil(maxAge.years/cols)*spacing - (spacing - size);
     canvas.width = cols*spacing - (spacing - size);
     // past years
     ctx.fillStyle = "rgba(200, 0, 0, 0.6)";
-    for (var i = 0; i < age.years; i++)
+    for (var i = 0; i < Math.floor(age.years); i++)
     	ctx.fillRect((i % cols)*spacing, Math.floor(i/cols)*spacing, size, size);
     // current year
     ctx.fillStyle = "rgba(200, 0, 0," + 0.6*(age.months % 12) / 12 + ")";
-    ctx.fillRect((age.years % cols)*spacing, Math.floor(age.years/cols)*spacing, size, size);
+    ctx.fillRect((Math.floor(age.years) % cols)*spacing, Math.floor(age.years/cols)*spacing, size, size);
     ctx.fillStyle = "rgba(0, 0, 200," + 0.6*(1 - (age.months % 12) / 12) + ")";
-    ctx.fillRect((age.years % cols)*spacing, Math.floor(age.years/cols)*spacing, size, size);
+    ctx.fillRect((Math.floor(age.years) % cols)*spacing, Math.floor(age.years/cols)*spacing, size, size);
     // future years
     ctx.fillStyle = "rgba(0, 0, 200, 0.6)";
-    for (var i = age.years + 1; i < 100; i++)
+    for (var i = Math.ceil(age.years); i < maxAge.years; i++)
 		ctx.fillRect((i % cols)*spacing, Math.floor(i/cols)*spacing, size, size);
 }
 
@@ -59,22 +68,31 @@ function calcAge() {
     var birthday = +new Date(document.getElementById("dob").value);
     var s = (Date.now() - birthday) / 1000;
     age = {
-        seconds: Math.floor(s),
-        minutes: Math.floor(s/60),
-        hours: Math.floor(s/(60*60)),
-        days: Math.floor(s/(60*60*24)),
-        weeks: Math.floor(s/(60*60*24*7)),
-        months: Math.floor(s/(60*60*24*30.42)),
-        years: Math.floor(s/(60*60*24*365.25)),
-    }
+        seconds: s,
+        minutes: s/60,
+        hours: s/(60*60),
+        days: s/(60*60*24),
+        weeks: s/(60*60*24*7),
+        months: s/(60*60*24*30.42),
+        years: s/(60*60*24*365.25),
+    };
 }
 
-// error message displayed for centenarians
+// message displayed for centenarians
 function dead() {
     canvas.width = 123;
     canvas.height = 15;
     ctx.font = "20px Arial";
     ctx.fillText("You are dead!", 0, 15);
+}
+
+// message displayed for potential uploads
+function immortal() {
+    canvas.width = 327;
+    canvas.height = 50;
+    ctx.font = "20px Arial";
+    ctx.fillText("You will live to see the singularity.", 15, 15);
+    ctx.fillText("Your lifespan is impossible to predict.", 0, 40);
 }
 
 // change the visualization function and update
@@ -88,8 +106,12 @@ function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 	calcAge();
     // check pulse
-    if (age.years >= 100)
+    if (age.years === NaN)
+        return;
+    else if (age.years >= maxAge.years)
         dead();
+    else if (age.years < 10)
+        immortal();
     else
 	   curViz();
 }
