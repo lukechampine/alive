@@ -3,19 +3,19 @@ var canvas, ctx, age, curViz;
 // draw remaining years as a column of rectangles
 function drawYears() {
     // resize canvas
-    canvas.height = 500;
-    canvas.width = 92;
+    canvas.height = 390;
+    canvas.width = 90;
     // past years
-    ctx.fillStyle = "rgba(200, 0, 0, 0.5)";
+    ctx.fillStyle = "rgba(200, 0, 0, 0.6)";
     for (var i = 0; i < age.years; i++)
     	ctx.fillRect((i % 5) * 20, Math.floor(i/5) * 20, 10, 10);
     // current year
-    ctx.fillStyle = "rgba(200, 0, 0," + 0.5 * (age.months % 12) / 12 + ")";
+    ctx.fillStyle = "rgba(200, 0, 0," + 0.6 * (age.months % 12) / 12 + ")";
     ctx.fillRect((age.years % 5) * 20, Math.floor(age.years/5) * 20, 10, 10);
-    ctx.fillStyle = "rgba(0, 0, 200," + 0.5 * (1 - (age.months % 12) / 12) + ")";
+    ctx.fillStyle = "rgba(0, 0, 200," + 0.6 * (1 - (age.months % 12) / 12) + ")";
     ctx.fillRect((age.years % 5) * 20, Math.floor(age.years/5) * 20, 10, 10);
     // future years
-    ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+    ctx.fillStyle = "rgba(0, 0, 200, 0.6)";
     for (var i = age.years + 1; i < 100; i++)
 		ctx.fillRect((i % 5) * 20, Math.floor(i/5) * 20, 10, 10);
 }
