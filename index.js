@@ -9,6 +9,27 @@ var maxAge = {
     years: 80
 };
 
+// draw remaining hours as a stack of bars
+function drawHours() {
+    // parameters
+    var cols = 974;
+    var barHeight = 24*365.25/cols;
+    var spacing = barHeight + 1;
+    // resize canvas
+    var numBars = Math.ceil(maxAge.years - age.years);
+    canvas.height = numBars*spacing - (spacing - barHeight);
+    canvas.width = cols;
+    // draw future years' hours from bottom up
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    for (var i = 0; i < numBars; i++)
+        ctx.fillRect(0, canvas.height - spacing*i + 1, canvas.width, barHeight);
+    // draw current year's hours
+    var excess = (maxAge.hours - age.hours) % (24*365.25);
+    ctx.fillRect(0, barHeight - Math.floor(excess/cols), canvas.width, Math.floor(excess/cols));
+    ctx.fillStyle = "rgba(200, 0, 0, 0.8)";
+    ctx.fillRect(canvas.width - Math.floor(excess % cols), barHeight - Math.floor(excess/cols) - 1, canvas.width, 1);
+}
+
 // draw remaining years as a grid of circles, 13 wide
 function drawWeeks() {
     // parameters
@@ -18,8 +39,8 @@ function drawWeeks() {
     // resize canvas
     canvas.height = Math.ceil((maxAge.weeks - age.weeks)/cols)*spacing - (spacing - 2*radius);
     canvas.width = cols*spacing - (spacing - 2*radius);
+    // draw future weeks from bottom up
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-    // draw past weeks from bottom up
     for (var i = 0; i < Math.floor(maxAge.weeks - age.weeks); i++) {
         var x = canvas.width - (i % cols)*spacing;
         var y = canvas.height - Math.floor(i/cols)*spacing;
