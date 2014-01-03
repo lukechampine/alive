@@ -11,6 +11,8 @@ var maxAge = {
 
 // draw remaining hours as a stack of bars
 function drawHours() {
+    // update every hour
+    setTimeout(update, (60 - new Date().getMinutes())*60*1000);
     // parameters
     var cols = 974;
     var barHeight = 24*365.25/cols;
@@ -32,6 +34,8 @@ function drawHours() {
 
 // draw remaining years as a grid of circles, 13 wide
 function drawWeeks() {
+    // update every hour
+    setTimeout(update, (60 - new Date().getMinutes())*60*1000);
     // parameters
     var cols = 52;
     var radius = 3;
@@ -62,6 +66,8 @@ function drawWeeks() {
 
 // draw remaining years as a column of rectangles
 function drawYears() {
+    // update every day
+    setTimeout(update, (24 - new Date().getHours())*60*60*1000);
     // parameters
     var cols = 5;
     var size = 10;
